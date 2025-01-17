@@ -7,3 +7,8 @@ For more information, see the [course curriculum](https://nextjs.org/learn) on t
 cd nextjs-dashboard
 pnpm run dev
 "# nextjs-dashboard-api" 
+
+
+
+
+npm install -g pnpm@latest-10
