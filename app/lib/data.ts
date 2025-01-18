@@ -106,35 +106,68 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6;
+const limit = 6;
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number
 ) {
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+
+  console.log(`2222ssssssssssssss### query=${query}`)
+  console.log(`2222ssssssssssssss### currentPage=${currentPage}`)
+
+
+
+
+
+
+
+
+
+
+  console.log(`### ITEMS_PER_PAGE=${ITEMS_PER_PAGE}`)
+  console.log(`### limit=${limit}`)
+  console.log(`### currentPage=${currentPage}`)
+
+  
+  // const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  const offset = (currentPage - 1) * limit;
+  console.log(`### offset=${offset}`)
 
   try {
-    const invoices = await sql<InvoicesTable>`
-      SELECT
-        invoices.id,
-        invoices.amount,
-        invoices.date,
-        invoices.status,
-        customers.name,
-        customers.email,
-        customers.image_url
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      WHERE
-        customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`} OR
-        invoices.amount::text ILIKE ${`%${query}%`} OR
-        invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
-      ORDER BY invoices.date DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-    `;
+    // const invoices = await sql<InvoicesTable>`
+    //   SELECT
+    //     invoices.id,
+    //     invoices.amount,
+    //     invoices.date,
+    //     invoices.status,
+    //     customers.name,
+    //     customers.email,
+    //     customers.image_url
+    //   FROM invoices
+    //   JOIN customers ON invoices.customer_id = customers.id
+    //   WHERE
+    //     customers.name ILIKE ${`%${query}%`} OR
+    //     customers.email ILIKE ${`%${query}%`} OR
+    //     invoices.amount::text ILIKE ${`%${query}%`} OR
+    //     invoices.date::text ILIKE ${`%${query}%`} OR
+    //     invoices.status ILIKE ${`%${query}%`}
+    //   ORDER BY invoices.date DESC
+    //   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    // `;
 
-    return invoices.rows;
+    const url = `http://localhost:8088/todo/6?offset=${offset}&limit=${limit}${query}`
+  console.log(`2222ssssssssssssss### url=${url}`)
+    let res = await fetch(url);
+    const invoices = await res.json();
+
+
+    console.log(`2222ssssssssssssss### invoices=${invoices}`)
+
+
+
+
+    return invoices;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch invoices.");
@@ -142,20 +175,41 @@ export async function fetchFilteredInvoices(
 }
 
 export async function fetchInvoicesPages(query: string) {
-  try {
-    const count = await sql`SELECT COUNT(*)
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
-    WHERE
-      customers.name ILIKE ${`%${query}%`} OR
-      customers.email ILIKE ${`%${query}%`} OR
-      invoices.amount::text ILIKE ${`%${query}%`} OR
-      invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
-  `;
 
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+
+  console.log(`ssssssssssssss### query=${query}`)
+
+  try {
+
+
+
+  //   const count = await sql`SELECT COUNT(*)
+  //   FROM invoices
+  //   JOIN customers ON invoices.customer_id = customers.id
+  //   WHERE
+  //     customers.name ILIKE ${`%${query}%`} OR
+  //     customers.email ILIKE ${`%${query}%`} OR
+  //     invoices.amount::text ILIKE ${`%${query}%`} OR
+  //     invoices.date::text ILIKE ${`%${query}%`} OR
+  //     invoices.status ILIKE ${`%${query}%`}
+  // `;
+    const url = `http://localhost:8088/todo/7?${query}`
+  console.log(`### url=${url}`)
+
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log(`### res=${res}`)
+  console.log(`### data=${JSON.stringify(data)}`)
+  console.log(`### data[0]=${data[0]}`)
+
+  // const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(Number(data[0].count) / limit);
+    console.log(`SSSSSSSSSSSS ### totalPages=${totalPages}`)
     return totalPages;
+
+
+
+
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of invoices.");
@@ -180,6 +234,10 @@ export async function fetchInvoiceById(id: string) {
       amount: invoice.amount / 100,
     }));
 
+    console.log(invoice); // Invoice is an empty array []
+
+
+    
     return invoice[0];
   } catch (error) {
     console.error("Database Error:", error);
