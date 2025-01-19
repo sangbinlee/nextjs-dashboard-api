@@ -6,20 +6,25 @@ import {
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
+import React, { useState, FormEvent } from 'react'
+ 
+import { updateInvoice } from '@/app/lib/data';
 
-import { updateInvoice } from '@/app/lib/actions';
+// import FormData from 'form-data';
+import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css';
+// import Datepicker from "tailwind-datepicker-react"
 
+// import Datepicker from "react-tailwindcss-datepicker";
 
-
-
-
-
-
-
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { ko } from 'date-fns/locale';
+registerLocale("ko", ko);
 
 
 
@@ -31,28 +36,98 @@ export default function EditInvoiceForm({
   customers: CustomerField[];
 }) {
 
-  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+  console.log(`edit page ### invoice=${JSON.stringify(invoice)}`)
+  console.log(`edit page ### customers=${JSON.stringify(customers)}`)
+  console.log(`edit page ### invoice.id=${invoice.id}`)
+
+ 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+ 
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsLoading(true) // Set loading to true when the request starts
+ 
+      // const formData = new FormData();
+      // const formData = new FormData(event.currentTarget)
+    try {
+
+      const formData = {
+        customerId : event.target.customerId.value,
+        // amount : event.target.amount.value * 100,
+        amount : event.target.amount.value ,
+        status : event.target.status.value,
+        id : invoice.id,
+        date : event.target.date.value.substring(0,10),
+      }
+
+
+      console.log(`### formData=${JSON.stringify(formData)}`)
+      let body = JSON.stringify(formData)
+      console.log(`### body=${body}`)
+  
+      // let loginData = {
+      //     method: 'update',
+      //     body: body,
+      //     headers: {
+      //         'Content-Type': 'application/json'
+      //     }
+      // };
+      // console.log(`### loginData=${loginData}`)
+
+
+      // const url = `http://localhost:8088/invoices`
+      // console.log(`fetchCustomers ### url=${url}`)
+  
+      // const res = await fetch(url, loginData);
+      // const data = await res.json();
+      // console.log(`### res=${res}`)
+      // console.log(`### data=${data}`)
+      // console.log(`### data=${JSON.stringify(data)}`)
+
+
+      updateInvoice(formData)
 
 
 
 
 
+
+
+      // ...
+    } catch (error) {
+      // Handle error if necessary
+      console.error(error)
+    } finally {
+      setIsLoading(false) // Set loading to false when the request completes
+    }
+  }
+
+ 
+
+  
+
+
+// const [startDate, setStartDate] = useState(new Date());// invoice.date
+const [startDate, setStartDate] = useState(new Date(invoice.date));// invoice.date
 
 
 
 
   return (
     // Passing an id as argument won't work
-    <form action={updateInvoice(id)}>
+    // <form action={updateInvoiceWithId}>
+    // <form action="/invoices">
+    <form onSubmit={onSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
-          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+          <label htmlFor="customerId" className="mb-2 block text-sm font-medium">
             Choose customer
           </label>
           <div className="relative">
             <select
-              id="customer"
+              id="customerId"
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue={invoice.customer_id}
@@ -133,6 +208,37 @@ export default function EditInvoiceForm({
             </div>
           </div>
         </fieldset>
+
+
+
+        {/* Invoice date */}
+
+        <div className="mb-4">
+          <label htmlFor="date" className="mb-2 block text-sm font-medium">
+            Choose an date
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <DatePicker 
+              locale={ko}
+              dateFormat="yyyy-MM-dd(eee)"
+                placeholderText="Enter date"
+                id="date"
+                name="date"
+              selected={startDate} onChange={(date) => setStartDate(date)} 
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                />
+              <CalendarDaysIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
@@ -141,7 +247,16 @@ export default function EditInvoiceForm({
         >
           Cancel
         </Link>
-        <Button type="submit">Edit Invoice</Button>
+        {/* <Button type='submit'
+        >Edit Invoice</Button> */}
+
+        <button type="submit" disabled={isLoading}
+        className='flex h-10 items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
+        >
+          {isLoading ? 'Loading...' : 'Edit Invoice'}
+        </button>
+
+
       </div>
     </form>
   );

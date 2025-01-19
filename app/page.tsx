@@ -3,7 +3,42 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 import Image from "next/image";
-export default function Page() {
+
+
+
+
+
+export const metadata: Metadata = {
+  title: '홈 home ',
+};
+
+
+
+
+// export default function Page() {
+
+
+export default async function Page() {
+  // const res = await fetch(`https://...`)
+  // const data = await res.json()
+
+
+
+
+  // if (!res.ok) {
+  //   return 'There was an error.'
+  // }
+
+
+
+
+
+
+
+
+
+
+
   return (
     <main className="flex min-h-screen flex-col p-6">
       <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52">

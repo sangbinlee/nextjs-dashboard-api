@@ -14,7 +14,7 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -218,20 +218,31 @@ export async function fetchInvoicesPages(query: string) {
 
 export async function fetchInvoiceById(id: string) {
   try {
-    const data = await sql<InvoiceForm>`
-      SELECT
-        invoices.id,
-        invoices.customer_id,
-        invoices.amount,
-        invoices.status
-      FROM invoices
-      WHERE invoices.id = ${id};
-    `;
+    // const data = await sql<InvoiceForm>`
+    //   SELECT
+    //     invoices.id,
+    //     invoices.customer_id,
+    //     invoices.amount,
+    //     invoices.status
+    //   FROM invoices
+    //   WHERE invoices.id = ${id};
+    // `;
 
-    const invoice = data.rows.map((invoice) => ({
+
+    const url = `http://localhost:8088/todo/9?id=${id}`
+  console.log(`### url999=${url}`)
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  console.log(`### res=${res}`)
+  console.log(`### data=${JSON.stringify(data)}`)
+
+    
+    const invoice = data.map((invoice) => ({
       ...invoice,
       // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
+      // amount: invoice.amount / 100,
     }));
 
     console.log(invoice); // Invoice is an empty array []
@@ -247,15 +258,33 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   try {
-    const data = await sql<CustomerField>`
-      SELECT
-        id,
-        name
-      FROM customers
-      ORDER BY name ASC
-    `;
 
-    const customers = data.rows;
+
+    // const data = await sql<CustomerField>`
+    //   SELECT
+    //     id,
+    //     name
+    //   FROM customers
+    //   ORDER BY name ASC
+    // `;
+
+
+
+
+    const url = `http://localhost:8088/todo/8`
+  console.log(`fetchCustomers ### url=${url}`)
+
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log(`### res=${res}`)
+  console.log(`### data=${data}`)
+  console.log(`### data=${JSON.stringify(data)}`)
+
+
+
+
+
+    const customers = data;
     return customers;
   } catch (err) {
     console.error("Database Error:", err);
@@ -295,3 +324,60 @@ export async function fetchFilteredCustomers(query: string) {
     throw new Error("Failed to fetch customer table.");
   }
 }
+
+
+
+import { FormEvent } from 'react'
+
+import { revalidatePath } from 'next/cache';
+
+import { redirect } from 'next/navigation';
+
+
+export async function updateInvoice(formData: Object) {
+
+  console.log(`updateInvoice formData... ${formData}`); 
+
+ 
+  
+    try {
+        // await sql`
+        //     UPDATE invoices
+        //     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+        //     WHERE id = ${id}
+        // `;
+
+        let body = JSON.stringify(formData)
+        console.log(`### body=${body}`)
+    
+        let loginData = {
+            method: 'PUT',
+            body: body,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // mode: 'no-cors'
+            // mode: 'cors'
+        };
+        console.log(`### loginData=${loginData}`)
+
+
+        const url = `http://localhost:8088/invoices`
+        console.log(`fetchCustomers ### url=${url}`)
+    
+        const res = await fetch(url, loginData);
+        const data = await res.json();
+        console.log(`### res=${res}`)
+        console.log(`### data=${data}`)
+        console.log(`### data=${JSON.stringify(data)}`)
+
+        revalidatePath('/dashboard/invoices');
+        redirect('/dashboard/invoices');
+
+    } catch (error) {
+        // We'll log the error to the console for now
+        console.error(error);
+    }
+
+
+  }
