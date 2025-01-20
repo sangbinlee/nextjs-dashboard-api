@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 
+import { API_URL } from "@/app/lib/data";
 
 export async function authenticate(
   prevState: string | undefined,
@@ -90,7 +91,7 @@ export async function createInvoice(formData: FormData) {
     };
     console.log(`### loginData=${loginData}`)
 
-    const url = `https://api.dev9.store/invoices`
+    const url = `${API_URL}/invoices`
     console.log(`### url=${url}`)
 
     const res = await fetch(url, loginData);
@@ -106,7 +107,7 @@ export async function createInvoice(formData: FormData) {
     console.error(error);
   }
  
-  revalidatePath('/dashboard/invoices');
+  // revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
@@ -148,7 +149,7 @@ export async function updateInvoice(ids: string, formData: FormData) {
         console.log(`### loginData=${loginData}`)
 
 
-        const url = `https://api.dev9.store/invoices`
+        const url = `${API_URL}/invoices`
         console.log(`fetchCustomers ### url=${url}`)
     
         const res = await fetch(url, loginData);
