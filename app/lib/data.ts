@@ -9,6 +9,11 @@ import {
 } from "./definitions";
 import { formatCurrency } from "./utils";
 
+
+
+export const API_URL = process.env.API_URL
+
+
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
@@ -21,7 +26,8 @@ export async function fetchRevenue() {
 
     console.log('Data fetch completed after 3 seconds.');
 
-    let res = await fetch("https://api.dev9.store/revenue");
+    const url = `${API_URL}/revenue`
+    let res = await fetch(url);
     let data = await res.json();
 
     // console.log("data=", data);
@@ -43,8 +49,10 @@ export async function fetchLatestInvoices() {
     //   ORDER BY invoices.date DESC
     //   LIMIT 5`;
 
-    let res = await fetch("https://api.dev9.store/todo/2");
+    const url = `${API_URL}/todo/2`
+    let res = await fetch(url);
     let data = await res.json();
+    console.log('url=', url) 
 
     const latestInvoices = data.map((invoice : InvoiceForm) => ({
       ...invoice,
@@ -69,15 +77,15 @@ export async function fetchCardData() {
     //      SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
     //      FROM invoices`;
 
-    let res1 =  await  fetch("https://api.dev9.store/todo/3");
+    const url = `${API_URL}/todo/3`
+    let res1 = await fetch(url);
     let invoiceCountPromise = await res1.json();
-    let res2 =  await  fetch("https://api.dev9.store/todo/4");
+    const url2 = `${API_URL}/todo/4`
+    let res2 = await fetch(url2);
     let customerCountPromise = await res2.json();
-    let res3 =  await  fetch("https://api.dev9.store/todo/5") ;
+    const url3 = `${API_URL}/todo/5`
+    let res3 = await fetch(url3);
     let invoiceStatusPromise = await res3.json();
-    // const invoiceCountPromise = await fetch("https://api.dev9.store/todo/3");
-    // const customerCountPromise = await fetch("https://api.dev9.store/todo/4");
-    // const invoiceStatusPromise = await fetch("https://api.dev9.store/todo/5") ;
 
          const data = await Promise.all([
           invoiceCountPromise,
@@ -149,14 +157,14 @@ export async function fetchFilteredInvoices(
     //   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     // `;
 
-    const url = `https://api.dev9.store/todo/6?offset=${offset}&limit=${limit}&query=${query}`
+    const url = `${API_URL}/todo/6?offset=${offset}&limit=${limit}&query=${query}`
   console.log(`2222ssssssssssssss### url=${url}`)
     let res = await fetch(url);
     const invoices = await res.json();
 
 
-    console.log(`2222ssssssssssssss### invoices=${invoices}`)
-    console.log('### invoices=',invoices)
+    // console.log(`2222ssssssssssssss### invoices=${invoices}`)
+    // console.log('### invoices=',invoices)
 
 
 
@@ -187,7 +195,7 @@ export async function fetchInvoicesPages(query: string) {
   //     invoices.date::text ILIKE ${`%${query}%`} OR
   //     invoices.status ILIKE ${`%${query}%`}
   // `;
-    const url = `https://api.dev9.store/todo/7?query=${query}`
+    const url = `${API_URL}/todo/7?query=${query}`
     console.log(`### url=${url}`)
     const res = await fetch(url);
     const data = await res.json();
@@ -222,7 +230,7 @@ export async function fetchInvoiceById(id: string) {
     // `;
 
 
-    const url = `https://api.dev9.store/todo/9?id=${id}`
+    const url = `${API_URL}/todo/9?id=${id}`
     console.log(`### url999=${url}`)
 
     const res = await fetch(url);
@@ -252,7 +260,7 @@ export async function fetchInvoiceById(id: string) {
 export async function fetchCustomers() {
   try {
 
-    const url = `https://api.dev9.store/todo/8`
+    const url = `${API_URL}/todo/8`
     console.log(`fetchCustomers ### url=${url}`)
 
     const res = await fetch(url);
@@ -289,9 +297,9 @@ export async function fetchFilteredCustomers(query: string) {
 		// ORDER BY customers.name ASC
 	  // `;
 
+ 
 
-
-    const url = `https://api.dev9.store/todo/10?query=${query}`
+    const url = `${API_URL}/todo/10?query=${query}`
     console.log(`fetchCustomers ### url=${url}`)
 
     const res = await fetch(url);
