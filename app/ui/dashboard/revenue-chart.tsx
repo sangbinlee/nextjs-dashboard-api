@@ -5,6 +5,13 @@ import { lusitana } from '@/app/ui/fonts';
 import { fetchRevenue } from '@/app/lib/data';
 
 
+import {
+  CustomerField,
+  CustomersTableType,
+  LatestInvoice,
+  InvoicesTable,
+  Revenue,
+} from "@/app/lib/definitions";
 
 
 
@@ -62,7 +69,7 @@ export default async function RevenueChart() { // Make component async, remove t
             ))}
           </div>
 
-          {revenue.map((month) => (
+          {revenue.map((month : Revenue) => (
             <div key={month.month} className="flex flex-col items-center gap-2">
               <div
                 className="w-full rounded-md bg-blue-300"

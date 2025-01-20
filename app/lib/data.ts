@@ -5,6 +5,7 @@ import {
   CustomersTableType,
   InvoiceForm,
   InvoicesTable,
+  Customer,
 } from "./definitions";
 import { formatCurrency } from "./utils";
 
@@ -45,7 +46,7 @@ export async function fetchLatestInvoices() {
     let res = await fetch("http://localhost:8088/todo/2");
     let data = await res.json();
 
-    const latestInvoices = data.map((invoice) => ({
+    const latestInvoices = data.map((invoice : InvoiceForm) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
@@ -270,25 +271,37 @@ export async function fetchCustomers() {
 
 export async function fetchFilteredCustomers(query: string) {
   try {
-    const data = await sql<CustomersTableType>`
-		SELECT
-		  customers.id,
-		  customers.name,
-		  customers.email,
-		  customers.image_url,
-		  COUNT(invoices.id) AS total_invoices,
-		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
-		FROM customers
-		LEFT JOIN invoices ON customers.id = invoices.customer_id
-		WHERE
-		  customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
-		ORDER BY customers.name ASC
-	  `;
+    // const data = await sql<CustomersTableType>`
+		// SELECT
+		//   customers.id,
+		//   customers.name,
+		//   customers.email,
+		//   customers.image_url,
+		//   COUNT(invoices.id) AS total_invoices,
+		//   SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
+		//   SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+		// FROM customers
+		// LEFT JOIN invoices ON customers.id = invoices.customer_id
+		// WHERE
+		//   customers.name ILIKE ${`%${query}%`} OR
+    //     customers.email ILIKE ${`%${query}%`}
+		// GROUP BY customers.id, customers.name, customers.email, customers.image_url
+		// ORDER BY customers.name ASC
+	  // `;
 
-    const customers = data.rows.map((customer) => ({
+
+
+    const url = `http://localhost:8088/todo/10?query=${query}`
+    console.log(`fetchCustomers ### url=${url}`)
+
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log(`### res=${res}`)
+    console.log(`### data=${data}`)
+    console.log(`### data=${JSON.stringify(data)}`)
+
+
+    const customers = data.map((customer: CustomersTableType) => ({
       ...customer,
       total_pending: formatCurrency(customer.total_pending),
       total_paid: formatCurrency(customer.total_paid),

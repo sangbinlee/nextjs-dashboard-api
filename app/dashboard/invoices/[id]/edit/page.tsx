@@ -5,6 +5,7 @@ import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
 
+import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: '수정 송장 Invoices',
 };

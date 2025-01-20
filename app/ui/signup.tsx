@@ -1,7 +1,7 @@
 'use client'
  
 import { useActionState } from 'react'
-import { createUser } from '@/app/actions'
+import { createUser } from '@/app/lib/actions'
  
 const initialState = {
   message: '',

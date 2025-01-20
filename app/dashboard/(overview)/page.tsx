@@ -15,6 +15,7 @@ import {
  
 
 
+import { Metadata } from 'next';
 
 
 

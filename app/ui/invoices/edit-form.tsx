@@ -63,12 +63,12 @@ export default function EditInvoiceForm({
 
 
   // 날짜 값이 없는 경우.... 오늘 날짜 세팅
-  let [startDate, setStartDate] = useState(new Date());// invoice.date
+  let [startDate, setStartDate] = useState<Date | null>(new Date());// invoice.date
   if (invoice.date != undefined) {
-    [startDate, setStartDate] = useState(new Date(invoice.date));// invoice.date
+    [startDate, setStartDate] = useState<Date | null>(new Date(invoice.date));// invoice.date
   }  
   else{
-    [startDate, setStartDate] = useState(new Date());// invoice.date
+    [startDate, setStartDate] = useState<Date | null>(new Date());// invoice.date
   }
 
 
@@ -183,7 +183,8 @@ export default function EditInvoiceForm({
                 placeholderText="Enter date"
                 id="date"
                 name="date"
-              selected={startDate} onChange={(date) => setStartDate(date)} 
+                selected={startDate} 
+                onChange={(date : Date | null) => setStartDate(date)} 
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 />
               <CalendarDaysIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
