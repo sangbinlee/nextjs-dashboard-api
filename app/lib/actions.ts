@@ -1,4 +1,5 @@
 'use server';
+// 'use client';
  
 
 import { z } from 'zod';
@@ -12,9 +13,14 @@ import { redirect } from 'next/navigation';
 
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(['pending', 'paid']),
+  customerId: z.string({
+    invalid_type_error: 'Please select a customer.',
+  }),
+  amount: z.coerce.number()
+  .gt(0, { message: 'Please enter an amount greater than $0.' }),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select an invoice status.',
+  }),
   date: z.string(),
 });
 
@@ -32,35 +38,27 @@ export async function createUser(prevState: any, formData: FormData) {
 
 
  
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
-
-
+// const CreateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateInvoice = FormSchema.omit({ id: true});
 export async function createInvoice(formData: FormData) {
-  console.log('createInvoice=========',1111111)
-  const { customerId, amount, status } = CreateInvoice.parse({    
+  console.log('@@@@createInvoice=========FormData',FormData)
+  const { customerId, amount, status , date} = CreateInvoice.parse({    
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
+    date: formData.get('date')?.toString().substring(0,10),
   })
   // Test it out:
   
   const amountInCents = amount * 100;
   
-  const date = new Date().toISOString().split('T')[0];
+  // const date = new Date().toISOString().split('T')[0];
 
-
-
-//   await sql`
-//     INSERT INTO invoices (customer_id, amount, status, date)
-//     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-//   `;
+ 
   try {
-    // await sql`
-    //   INSERT INTO invoices (customer_id, amount, status, date)
-    //   VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-    // `;
+ 
 
-    let formData = { customerId, amount ,status}
+    let formData = { customerId, amount ,status, date}
     let body = JSON.stringify(formData)
     console.log(`### body=${body}`)
 
@@ -83,65 +81,50 @@ export async function createInvoice(formData: FormData) {
     console.log(`### data=${JSON.stringify(data)}`)
 
 
+
   } catch (error) {
     // We'll log the error to the console for now
     console.error(error);
   }
-
-    revalidatePath('/dashboard/invoices');
-    redirect('/dashboard/invoices');
-
+ 
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 
 // 
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
-export async function updateInvoice(formData: FormData) {
+// const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+// const UpdateInvoice = FormSchema.omit({ id: true });
+const UpdateInvoice = FormSchema.omit({});
+export async function updateInvoice(ids: string, formData: FormData) {
 
-  console.log(`updateInvoice ### formData=${formData}`)
+    console.log(`updateInvoice ### formData=${formData}`)
+    console.log('updateInvoice ### ids=', ids)
 
-
-
-
-
-
-  const { customerId, amount, status } = UpdateInvoice.parse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
-  });
-
-
-   
-
+    const { customerId, amount, status, date, id } = UpdateInvoice.parse({
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status'),
+      date: formData.get('date')?.toString().substring(0,10),
+      id:ids.toString()
+    });
 
     const amountInCents = amount * 100;
-
- 
-
-    // await sql`
-    //   UPDATE invoices
-    //   SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    //   WHERE id = ${id}
-    // `;
     
     try {
-        // await sql`
-        //     UPDATE invoices
-        //     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-        //     WHERE id = ${id}
-        // `;
 
-        let formData = { customerId, amount ,status}
+        let formData = { customerId, amount ,status, date, id}
         let body = JSON.stringify(formData)
         console.log(`### body=${body}`)
     
         let loginData = {
-            method: 'update',
+            method: 'PUT',
             body: body,
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            // mode: 'no-cors'
+            // mode: 'cors'
         };
         console.log(`### loginData=${loginData}`)
 
@@ -161,27 +144,29 @@ export async function updateInvoice(formData: FormData) {
         console.error(error);
     }
 
-
+    // try 안에 넣으면 안됨... 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
-  }
+
+}
 
 
 
-  export async function deleteInvoice(id: string) {
+export async function deleteInvoice(id: string) {
 
+  console.log(`### id=${id}`)
 
-    console.log(`### id=${id}`)
-    return
-
-    // throw new Error('Failed to Delete Invoice');
-   
-    // Unreachable code block
-    // await sql`DELETE FROM invoices WHERE id = ${id}`;
-
+  // throw new Error('Failed to Delete Invoice');
+  
+  // Unreachable code block
+  // await sql`DELETE FROM invoices WHERE id = ${id}`;
+  try {
+    
+    let formData = { id}
+    let body = JSON.stringify(formData)
     let loginData = {
-        method: 'delete',
-        body: {id },
+        method: 'DELETE',
+        body: body,
         headers: {
             'Content-Type': 'application/json'
         }
@@ -189,16 +174,20 @@ export async function updateInvoice(formData: FormData) {
     console.log(`### loginData=${loginData}`)
 
 
-    const url = `http://localhost:8088/invoices`
-    console.log(`fetchCustomers ### url=${url}`)
+    const url = `http://localhost:8088/invoices/${id}`
+    console.log(`DELETE ### url=${url}`)
 
     const res = await fetch(url, loginData);
     const data = await res.json();
-    console.log(`### res=${res}`)
-    console.log(`### data=${data}`)
-    console.log(`### data=${JSON.stringify(data)}`)
-
-
-
-    revalidatePath('/dashboard/invoices');
+    console.log(`DELETE ### res=${res}`)
+    console.log(`DELETE ### data=${data}`)
+    console.log(`DELETE ### data=${JSON.stringify(data)}`)
+  } catch (error) {
+    
+    console.error(error);
   }
+
+
+
+  revalidatePath('/dashboard/invoices');
+}

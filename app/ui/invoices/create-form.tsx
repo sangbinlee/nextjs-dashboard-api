@@ -1,3 +1,5 @@
+'use client';
+
 import { CustomerField } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
@@ -5,16 +7,29 @@ import {
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
-import { createInvoice } from '@/app/lib/actions'; 
+import { createInvoice, State } from '@/app/lib/actions';
+
+
+import React, { useState, FormEvent , useActionState} from 'react'
+
+
+import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css';
+
+import { ko } from 'date-fns/locale';
+
+
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
 
 
+  const initialState: State = { message: null, errors: {} };
+  const [state, formAction] = useActionState(createInvoice, initialState);
 
- 
-
+  const [startDate, setStartDate] = useState(new Date());// invoice.date
 
 
   return (
@@ -31,6 +46,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue=""
+              required
             >
               <option value="" disabled>
                 Select a customer
@@ -53,6 +69,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
+                required
                 id="amount"
                 name="amount"
                 type="number"
@@ -74,6 +91,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
+                required
                   id="pending"
                   name="status"
                   type="radio"
@@ -89,6 +107,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               </div>
               <div className="flex items-center">
                 <input
+                required
                   id="paid"
                   name="status"
                   type="radio"
@@ -105,7 +124,35 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             </div>
           </div>
         </fieldset>
+      
+      
+      
+      
+        {/* Invoice date */}
+
+        <div className="mb-4">
+          <label htmlFor="date" className="mb-2 block text-sm font-medium">
+            Choose an date
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <DatePicker 
+              locale={ko}
+              dateFormat="yyyy-MM-dd(eee)"
+                placeholderText="Enter date"
+                id="date"
+                name="date"
+              selected={startDate} onChange={(date) => setStartDate(date)} 
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                />
+              <CalendarDaysIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+          </div>
+        </div>
       </div>
+
+
+
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/dashboard/invoices"

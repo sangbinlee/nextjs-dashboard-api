@@ -117,14 +117,6 @@ export async function fetchFilteredInvoices(
   console.log(`2222ssssssssssssss### currentPage=${currentPage}`)
 
 
-
-
-
-
-
-
-
-
   console.log(`### ITEMS_PER_PAGE=${ITEMS_PER_PAGE}`)
   console.log(`### limit=${limit}`)
   console.log(`### currentPage=${currentPage}`)
@@ -156,13 +148,14 @@ export async function fetchFilteredInvoices(
     //   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     // `;
 
-    const url = `http://localhost:8088/todo/6?offset=${offset}&limit=${limit}${query}`
+    const url = `http://localhost:8088/todo/6?offset=${offset}&limit=${limit}&query=${query}`
   console.log(`2222ssssssssssssss### url=${url}`)
     let res = await fetch(url);
     const invoices = await res.json();
 
 
     console.log(`2222ssssssssssssss### invoices=${invoices}`)
+    console.log('### invoices=',invoices)
 
 
 
@@ -193,7 +186,7 @@ export async function fetchInvoicesPages(query: string) {
   //     invoices.date::text ILIKE ${`%${query}%`} OR
   //     invoices.status ILIKE ${`%${query}%`}
   // `;
-    const url = `http://localhost:8088/todo/7?${query}`
+    const url = `http://localhost:8088/todo/7?query=${query}`
   console.log(`### url=${url}`)
 
   const res = await fetch(url);
@@ -230,16 +223,16 @@ export async function fetchInvoiceById(id: string) {
 
 
     const url = `http://localhost:8088/todo/9?id=${id}`
-  console.log(`### url999=${url}`)
+    console.log(`### url999=${url}`)
 
-  const res = await fetch(url);
-  const data = await res.json();
+    const res = await fetch(url);
+    const data = await res.json();
 
-  console.log(`### res=${res}`)
-  console.log(`### data=${JSON.stringify(data)}`)
+    console.log(`### res=${res}`)
+    console.log(`### data=${JSON.stringify(data)}`)
 
     
-    const invoice = data.map((invoice) => ({
+    const invoice = data.map((invoice : InvoiceForm) => ({
       ...invoice,
       // Convert amount from cents to dollars
       // amount: invoice.amount / 100,
@@ -259,30 +252,14 @@ export async function fetchInvoiceById(id: string) {
 export async function fetchCustomers() {
   try {
 
-
-    // const data = await sql<CustomerField>`
-    //   SELECT
-    //     id,
-    //     name
-    //   FROM customers
-    //   ORDER BY name ASC
-    // `;
-
-
-
-
     const url = `http://localhost:8088/todo/8`
-  console.log(`fetchCustomers ### url=${url}`)
+    console.log(`fetchCustomers ### url=${url}`)
 
-  const res = await fetch(url);
-  const data = await res.json();
-  console.log(`### res=${res}`)
-  console.log(`### data=${data}`)
-  console.log(`### data=${JSON.stringify(data)}`)
-
-
-
-
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log(`### res=${res}`)
+    console.log(`### data=${data}`)
+    console.log(`### data=${JSON.stringify(data)}`)
 
     const customers = data;
     return customers;
@@ -325,59 +302,4 @@ export async function fetchFilteredCustomers(query: string) {
   }
 }
 
-
-
-import { FormEvent } from 'react'
-
-import { revalidatePath } from 'next/cache';
-
-import { redirect } from 'next/navigation';
-
-
-export async function updateInvoice(formData: Object) {
-
-  console.log(`updateInvoice formData... ${formData}`); 
-
  
-  
-    try {
-        // await sql`
-        //     UPDATE invoices
-        //     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-        //     WHERE id = ${id}
-        // `;
-
-        let body = JSON.stringify(formData)
-        console.log(`### body=${body}`)
-    
-        let loginData = {
-            method: 'PUT',
-            body: body,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            // mode: 'no-cors'
-            // mode: 'cors'
-        };
-        console.log(`### loginData=${loginData}`)
-
-
-        const url = `http://localhost:8088/invoices`
-        console.log(`fetchCustomers ### url=${url}`)
-    
-        const res = await fetch(url, loginData);
-        const data = await res.json();
-        console.log(`### res=${res}`)
-        console.log(`### data=${data}`)
-        console.log(`### data=${JSON.stringify(data)}`)
-
-        revalidatePath('/dashboard/invoices');
-        redirect('/dashboard/invoices');
-
-    } catch (error) {
-        // We'll log the error to the console for now
-        console.error(error);
-    }
-
-
-  }

@@ -11,21 +11,20 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-import React, { useState, FormEvent } from 'react'
  
-import { updateInvoice } from '@/app/lib/data';
+import { updateInvoice } from '@/app/lib/actions'; 
 
+import React, { useState, FormEvent } from 'react'
 // import FormData from 'form-data';
+
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 // import Datepicker from "tailwind-datepicker-react"
-
 // import Datepicker from "react-tailwindcss-datepicker";
 
 import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import { ko } from 'date-fns/locale';
 registerLocale("ko", ko);
-
 
 
 export default function EditInvoiceForm({
@@ -39,86 +38,45 @@ export default function EditInvoiceForm({
   console.log(`edit page ### invoice=${JSON.stringify(invoice)}`)
   console.log(`edit page ### customers=${JSON.stringify(customers)}`)
   console.log(`edit page ### invoice.id=${invoice.id}`)
-
+  console.log('########### invoice=', invoice)
+  console.log('■■■■########### invoice.date=', invoice.date)
  
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+ 
+  // 버튼 클릭시 비활성화 처리
+  // 폼 필드 값 가져오기.
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  // const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
- 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsLoading(true) // Set loading to true when the request starts
- 
-      // const formData = new FormData();
-      // const formData = new FormData(event.currentTarget)
-    try {
 
-      const formData = {
-        customerId : event.target.customerId.value,
-        // amount : event.target.amount.value * 100,
-        amount : event.target.amount.value ,
-        status : event.target.status.value,
-        id : invoice.id,
-        date : event.target.date.value.substring(0,10),
-      }
-
-
-      console.log(`### formData=${JSON.stringify(formData)}`)
-      let body = JSON.stringify(formData)
-      console.log(`### body=${body}`)
-  
-      // let loginData = {
-      //     method: 'update',
-      //     body: body,
-      //     headers: {
-      //         'Content-Type': 'application/json'
-      //     }
-      // };
-      // console.log(`### loginData=${loginData}`)
-
-
-      // const url = `http://localhost:8088/invoices`
-      // console.log(`fetchCustomers ### url=${url}`)
-  
-      // const res = await fetch(url, loginData);
-      // const data = await res.json();
-      // console.log(`### res=${res}`)
-      // console.log(`### data=${data}`)
-      // console.log(`### data=${JSON.stringify(data)}`)
-
-
-      updateInvoice(formData)
-
-
-
-
-
-
-
-      // ...
-    } catch (error) {
-      // Handle error if necessary
-      console.error(error)
-    } finally {
-      setIsLoading(false) // Set loading to false when the request completes
-    }
+      // const formData = {
+      //   customerId : event.target.customerId.value,
+      //   // amount : event.target.amount.value * 100,
+      //   amount : event.target.amount.value ,
+      //   status : event.target.status.value,
+      //   id : invoice.id,
+      //   date : event.target.date.value.substring(0,10),
+      // }
   }
-
  
 
-  
 
-
-// const [startDate, setStartDate] = useState(new Date());// invoice.date
-const [startDate, setStartDate] = useState(new Date(invoice.date));// invoice.date
-
-
+  // 날짜 값이 없는 경우.... 오늘 날짜 세팅
+  let [startDate, setStartDate] = useState(new Date());// invoice.date
+  if (invoice.date != undefined) {
+    [startDate, setStartDate] = useState(new Date(invoice.date));// invoice.date
+  }  
+  else{
+    [startDate, setStartDate] = useState(new Date());// invoice.date
+  }
 
 
   return (
     // Passing an id as argument won't work
-    // <form action={updateInvoiceWithId}>
-    // <form action="/invoices">
-    <form onSubmit={onSubmit}>
+    <form action={updateInvoiceWithId}>
+    {/* <form action="/invoices"> */}
+    {/* <form onSubmit={onSubmit}> */}
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -184,7 +142,7 @@ const [startDate, setStartDate] = useState(new Date(invoice.date));// invoice.da
                 />
                 <label
                   htmlFor="pending"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
+                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-red-500 px-3 py-1.5 text-xs font-medium text-gray-600"
                 >
                   Pending <ClockIcon className="h-4 w-4" />
                 </label>
@@ -247,14 +205,13 @@ const [startDate, setStartDate] = useState(new Date(invoice.date));// invoice.da
         >
           Cancel
         </Link>
-        {/* <Button type='submit'
-        >Edit Invoice</Button> */}
+        <Button type='submit'>Edit Invoice</Button>
 
-        <button type="submit" disabled={isLoading}
+        {/* <button type="submit" disabled={isLoading}
         className='flex h-10 items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
         >
           {isLoading ? 'Loading...' : 'Edit Invoice'}
-        </button>
+        </button> */}
 
 
       </div>

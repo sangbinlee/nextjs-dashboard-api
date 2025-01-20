@@ -2,6 +2,20 @@ import Form from '@/app/ui/invoices/create-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchCustomers } from '@/app/lib/data';
  
+
+
+
+
+export const metadata: Metadata = {
+  title: '등록 송장 Invoices',
+};
+
+
+
+
+
+
+
 export default async function Page() {
   const customers = await fetchCustomers();
  
