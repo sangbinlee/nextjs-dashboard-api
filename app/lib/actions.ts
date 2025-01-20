@@ -90,7 +90,7 @@ export async function createInvoice(formData: FormData) {
     };
     console.log(`### loginData=${loginData}`)
 
-    const url = `http://localhost:8088/invoices`
+    const url = `https://api.dev9.store/invoices`
     console.log(`### url=${url}`)
 
     const res = await fetch(url, loginData);
@@ -148,7 +148,7 @@ export async function updateInvoice(ids: string, formData: FormData) {
         console.log(`### loginData=${loginData}`)
 
 
-        const url = `http://localhost:8088/invoices`
+        const url = `https://api.dev9.store/invoices`
         console.log(`fetchCustomers ### url=${url}`)
     
         const res = await fetch(url, loginData);
@@ -193,7 +193,7 @@ export async function deleteInvoice(id: string) {
     console.log(`### loginData=${loginData}`)
 
 
-    const url = `http://localhost:8088/invoices/${id}`
+    const url = `https://api.dev9.store/invoices/${id}`
     console.log(`DELETE ### url=${url}`)
 
     const res = await fetch(url, loginData);
