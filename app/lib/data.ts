@@ -21,7 +21,7 @@ export async function fetchRevenue() {
 
     console.log('Data fetch completed after 3 seconds.');
 
-    let res = await fetch("http://localhost:8088/revenue");
+    let res = await fetch("https://api.dev9.store/revenue");
     let data = await res.json();
 
     // console.log("data=", data);
@@ -43,7 +43,7 @@ export async function fetchLatestInvoices() {
     //   ORDER BY invoices.date DESC
     //   LIMIT 5`;
 
-    let res = await fetch("http://localhost:8088/todo/2");
+    let res = await fetch("https://api.dev9.store/todo/2");
     let data = await res.json();
 
     const latestInvoices = data.map((invoice : InvoiceForm) => ({
@@ -69,15 +69,15 @@ export async function fetchCardData() {
     //      SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
     //      FROM invoices`;
 
-    let res1 =  await  fetch("http://localhost:8088/todo/3");
+    let res1 =  await  fetch("https://api.dev9.store/todo/3");
     let invoiceCountPromise = await res1.json();
-    let res2 =  await  fetch("http://localhost:8088/todo/4");
+    let res2 =  await  fetch("https://api.dev9.store/todo/4");
     let customerCountPromise = await res2.json();
-    let res3 =  await  fetch("http://localhost:8088/todo/5") ;
+    let res3 =  await  fetch("https://api.dev9.store/todo/5") ;
     let invoiceStatusPromise = await res3.json();
-    // const invoiceCountPromise = await fetch("http://localhost:8088/todo/3");
-    // const customerCountPromise = await fetch("http://localhost:8088/todo/4");
-    // const invoiceStatusPromise = await fetch("http://localhost:8088/todo/5") ;
+    // const invoiceCountPromise = await fetch("https://api.dev9.store/todo/3");
+    // const customerCountPromise = await fetch("https://api.dev9.store/todo/4");
+    // const invoiceStatusPromise = await fetch("https://api.dev9.store/todo/5") ;
 
          const data = await Promise.all([
           invoiceCountPromise,
@@ -149,7 +149,7 @@ export async function fetchFilteredInvoices(
     //   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     // `;
 
-    const url = `http://localhost:8088/todo/6?offset=${offset}&limit=${limit}&query=${query}`
+    const url = `https://api.dev9.store/todo/6?offset=${offset}&limit=${limit}&query=${query}`
   console.log(`2222ssssssssssssss### url=${url}`)
     let res = await fetch(url);
     const invoices = await res.json();
@@ -187,7 +187,7 @@ export async function fetchInvoicesPages(query: string) {
   //     invoices.date::text ILIKE ${`%${query}%`} OR
   //     invoices.status ILIKE ${`%${query}%`}
   // `;
-    const url = `http://localhost:8088/todo/7?query=${query}`
+    const url = `https://api.dev9.store/todo/7?query=${query}`
     console.log(`### url=${url}`)
     const res = await fetch(url);
     const data = await res.json();
@@ -222,7 +222,7 @@ export async function fetchInvoiceById(id: string) {
     // `;
 
 
-    const url = `http://localhost:8088/todo/9?id=${id}`
+    const url = `https://api.dev9.store/todo/9?id=${id}`
     console.log(`### url999=${url}`)
 
     const res = await fetch(url);
@@ -252,7 +252,7 @@ export async function fetchInvoiceById(id: string) {
 export async function fetchCustomers() {
   try {
 
-    const url = `http://localhost:8088/todo/8`
+    const url = `https://api.dev9.store/todo/8`
     console.log(`fetchCustomers ### url=${url}`)
 
     const res = await fetch(url);
@@ -291,7 +291,7 @@ export async function fetchFilteredCustomers(query: string) {
 
 
 
-    const url = `http://localhost:8088/todo/10?query=${query}`
+    const url = `https://api.dev9.store/todo/10?query=${query}`
     console.log(`fetchCustomers ### url=${url}`)
 
     const res = await fetch(url);

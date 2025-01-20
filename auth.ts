@@ -10,7 +10,10 @@ async function getUser(email: string): Promise<User | undefined> {
   try {
     // const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
 
-    const url = `http://localhost:8088/users?email=${email}`
+    // const url = `https://api.dev9.store/users?email=${email}`
+    const url = `https://api.dev9.store/users?email=${email}`
+
+    // https://api.dev9.store/
     console.log(`### url=${url}`)
     const res = await fetch(url);
     const user = await res.json();
