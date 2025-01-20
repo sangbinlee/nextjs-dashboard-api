@@ -23,7 +23,7 @@ export async function fetchRevenue() {
     let res = await fetch("http://localhost:8088/revenue");
     let data = await res.json();
 
-    console.log("data=", data);
+    // console.log("data=", data);
 
     return data;
     // return data.rows;
@@ -187,13 +187,12 @@ export async function fetchInvoicesPages(query: string) {
   //     invoices.status ILIKE ${`%${query}%`}
   // `;
     const url = `http://localhost:8088/todo/7?query=${query}`
-  console.log(`### url=${url}`)
-
-  const res = await fetch(url);
-  const data = await res.json();
-  console.log(`### res=${res}`)
-  console.log(`### data=${JSON.stringify(data)}`)
-  console.log(`### data[0]=${data[0]}`)
+    console.log(`### url=${url}`)
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log(`### res=${res}`)
+    console.log(`### data=${JSON.stringify(data)}`)
+    console.log(`### data[0]=${data[0]}`)
 
   // const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
   const totalPages = Math.ceil(Number(data[0].count) / limit);

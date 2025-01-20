@@ -31,7 +31,7 @@ export default async function RevenueChart() { // Make component async, remove t
 
 
   const revenue = await fetchRevenue();
-  console.log('revenue=', revenue)
+  // console.log('revenue=', revenue)
 
 
 
